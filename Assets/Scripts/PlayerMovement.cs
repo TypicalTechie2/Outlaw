@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     //Variables to store player input values
     Vector2 currentMovementInput;
     Vector3 currentMovement;
+    Vector3 appliedMovement;
     bool isMovementPressed;
 
     //constants
@@ -56,30 +57,37 @@ public class PlayerMovement : MonoBehaviour
         SetupJumpVariables();
     }
 
-    private void SetupJumpVariables()
+    // callback handler function to set the player input values
+    private void OnMovementInput(InputAction.CallbackContext context)
     {
-        float timeToApex = maxJumpTime / 2;
-        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
-        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
+        currentMovementInput = context.ReadValue<Vector2>();
+        currentMovement.x = currentMovementInput.x;
+        currentMovement.z = currentMovementInput.y;
+        isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
     }
 
-    private void handleJump()
-    {
-        if (!isJumping && characterController.isGrounded && isJumpPressed)
-        {
-            playerAnimator.SetBool(isJumpingHash, true);
-            isJumpAnimating = true;
-            isJumping = true;
-            currentMovement.y = initialJumpVelocity * 0.5f;
-        }
-        else if (!isJumpPressed && isJumping && characterController.isGrounded)
-        {
-            isJumping = false;
-        }
-    }
+    //callback handler function for jump button
     private void OnJump(InputAction.CallbackContext context)
     {
         isJumpPressed = context.ReadValueAsButton();
+    }
+
+    private void HandleAnimation()
+    {
+        // get parameter values from  animator
+        bool isRunning = playerAnimator.GetBool(isRunningHash);
+
+        //start running if movement pressed is true and not already running
+        if (isMovementPressed && !isRunning)
+        {
+            playerAnimator.SetBool(isRunningHash, true);
+        }
+
+        //stop running if is movementPressed is false and not already running
+        else if (!isMovementPressed && isRunning)
+        {
+            playerAnimator.SetBool(isRunningHash, false);
+        }
     }
 
     private void HandleRotation()
@@ -100,26 +108,42 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnMovementInput(InputAction.CallbackContext context)
+    // Update is called once per frame
+    void Update()
     {
-        currentMovementInput = context.ReadValue<Vector2>();
-        currentMovement.x = currentMovementInput.x;
-        currentMovement.z = currentMovementInput.y;
-        isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
+        HandleRotation();
+        HandleAnimation();
+
+        appliedMovement.x = currentMovement.x;
+        appliedMovement.z = currentMovement.z;
+        characterController.Move(appliedMovement * speed * Time.deltaTime);
+
+        HandleGravity();
+        handleJump();
     }
 
-    private void HandleAnimation()
+    // set the initial velocity and gravity using jump heights and duration
+    private void SetupJumpVariables()
     {
-        bool isRunning = playerAnimator.GetBool(isRunningHash);
+        float timeToApex = maxJumpTime / 2;
+        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
+        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
+    }
 
-        if (isMovementPressed && !isRunning)
+    // launch character into the air with initial vertical velocity if conditions met
+    private void handleJump()
+    {
+        if (!isJumping && characterController.isGrounded && isJumpPressed)
         {
-            playerAnimator.SetBool(isRunningHash, true);
+            playerAnimator.SetBool(isJumpingHash, true);
+            isJumpAnimating = true;
+            isJumping = true;
+            currentMovement.y = initialJumpVelocity;
+            appliedMovement.y = initialJumpVelocity;
         }
-
-        else if (!isMovementPressed && isRunning)
+        else if (!isJumpPressed && isJumping && characterController.isGrounded)
         {
-            playerAnimator.SetBool(isRunningHash, false);
+            isJumping = false;
         }
     }
 
@@ -133,38 +157,27 @@ public class PlayerMovement : MonoBehaviour
         {
             if (isJumpAnimating)
             {
-                playerAnimator.SetBool(isJumpingHash, true);
+                playerAnimator.SetBool(isJumpingHash, false);
                 isJumpAnimating = false;
             }
-            playerAnimator.SetBool(isJumpingHash, false);
 
-            currentMovement.y = groundedGravity * Time.deltaTime;
+            currentMovement.y = groundedGravity;
+            appliedMovement.y = groundedGravity;
+
         }
         else if (isFalling)
         {
             float previousYVelocity = currentMovement.y;
-            float newYVelocity = currentMovement.y + (gravity * fallMultiplier * Time.deltaTime);
-            float nextYVelocity = Mathf.Max((previousYVelocity + newYVelocity) * 0.5f, -20.0f);
-            currentMovement.y = nextYVelocity;
+            currentMovement.y = currentMovement.y + (gravity * fallMultiplier * Time.deltaTime);
+            appliedMovement.y = Mathf.Max((previousYVelocity + currentMovement.y) * 0.5f, -20.0f);
         }
         else
         {
             float previousYVelocity = currentMovement.y;
-            float newVelocity = currentMovement.y + (gravity * Time.deltaTime);
-            float nextVelocity = (previousYVelocity + newVelocity) * 0.5f;
-            currentMovement.y = nextVelocity;
+            currentMovement.y = currentMovement.y + (gravity * Time.deltaTime);
+            appliedMovement.y = (previousYVelocity + currentMovement.y) * 0.5f;
         }
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        HandleRotation();
-        HandleAnimation();
-        characterController.Move(currentMovement * speed * Time.deltaTime);
-        HandleGravity();
-        handleJump();
     }
 
     private void OnEnable()

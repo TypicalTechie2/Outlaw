@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!199 &76159611
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -1105,9 +1105,9 @@ ParticleSystem:
         m_RotationOrder: 4
     rateOverDistance:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 1
-      minScalar: 0
+      minMaxState: 3
+      scalar: 2
+      minScalar: 1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -5102,7 +5102,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &179069407
 Transform:
   m_ObjectHideFlags: 0
@@ -5986,44 +5986,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &841622448
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 5
-  m_Width: 1093
-  m_Height: 442
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 90
-  m_ColorFormat: 48
-  m_MipMap: 1
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &843031650
 GameObject:
   m_ObjectHideFlags: 0
@@ -6342,7 +6304,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: afbe2ba94ac7be448af106e18ad9519f,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1042890091}
+      addedObject: {fileID: 1042890095}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: afbe2ba94ac7be448af106e18ad9519f,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1042890096}
   m_SourcePrefab: {fileID: 100100000, guid: afbe2ba94ac7be448af106e18ad9519f, type: 3}
 --- !u!1 &1042890087 stripped
 GameObject:
@@ -6376,7 +6342,13 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 5, z: 0}
---- !u!114 &1042890091
+--- !u!4 &1042890093 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: afbe2ba94ac7be448af106e18ad9519f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1042890086}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1042890095
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6385,19 +6357,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1042890087}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9705fa3413a988547ae9e6afd4a24aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 4
+  rotationFactorPerFrame: 10
+  maxJumpHeight: 2
+  maxJumpTime: 1.5
+--- !u!114 &1042890096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1042890087}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a526a5f9ce1fbc3419fb6dd2efee0254, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 4
   rotationFactorPerFrame: 10
-  maxJumpHeight: 3
+  maxJumpHeight: 2
   maxJumpTime: 1.5
---- !u!4 &1042890093 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: afbe2ba94ac7be448af106e18ad9519f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1042890086}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1229021797
 GameObject:
   m_ObjectHideFlags: 0
@@ -6922,7 +6904,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 841622448}
+  m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1

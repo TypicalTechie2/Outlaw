@@ -47,9 +47,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _Depth: 10
-    - _Depth_Fade: 0.09
+    - _Depth_Fade: 1
     - _Foam: 0.1
-    - _Foam_Scale: 2.5
+    - _Foam_Scale: 10
     - _Lerp: 0.35
     - _Normal_Strength: 0.1
     - _QueueControl: 0
