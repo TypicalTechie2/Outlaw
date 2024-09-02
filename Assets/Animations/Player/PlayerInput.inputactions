@@ -2,13 +2,13 @@
     "name": "PlayerInput",
     "maps": [
         {
-            "name": "PlayerControls",
-            "id": "440c30a0-1f9c-412d-a2d5-8c20b4294935",
+            "name": "PlayerControlsIP",
+            "id": "6b12150b-7111-4b38-957a-051fe01c4ac3",
             "actions": [
                 {
-                    "name": "Movement",
+                    "name": "Move",
                     "type": "Value",
-                    "id": "e4ecb838-6710-4cca-8111-28e4cf1f848e",
+                    "id": "27ff615a-d74a-410b-860d-20372cd68e2b",
                     "expectedControlType": "Vector2",
                     "processors": "NormalizeVector2",
                     "interactions": "",
@@ -17,7 +17,7 @@
                 {
                     "name": "Jump",
                     "type": "Button",
-                    "id": "6c33aa0f-6055-4dd8-bff1-644d4ad6f0f7",
+                    "id": "6c7a1058-2881-4ddd-9a0d-cf6daa282ea2",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -26,63 +26,63 @@
             ],
             "bindings": [
                 {
-                    "name": "Keyboard",
-                    "id": "2a433c7f-e28f-4271-b301-1e6f81fa7d6f",
+                    "name": "2D Vector",
+                    "id": "78be7abd-a227-440f-b9d1-355629294768",
                     "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "up",
-                    "id": "49bcc5e1-2775-4d04-a7cc-19ae37df62c9",
+                    "id": "1d6eda94-4789-4dbd-8858-a81e4affeeb9",
                     "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "down",
-                    "id": "f58e45ac-766f-4a7d-b1ee-f92244341ea9",
+                    "id": "60d8f1ab-21c4-4904-a0cc-4d2d79783d91",
                     "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "left",
-                    "id": "2743d635-f777-49c4-a5a5-755789c5e215",
+                    "id": "dae9dd6a-e439-40ad-b53d-70d9b38edbab",
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "right",
-                    "id": "09b215ff-7a24-4518-b3f3-056c72d3be86",
+                    "id": "f18c510b-9a60-45f0-bb4b-1d0fd716d094",
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "",
-                    "id": "843a689d-09ea-4b19-8dc8-e7b0f243a3cf",
+                    "id": "2054c299-ec5d-4ad8-a29a-79f71ecf5836",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",

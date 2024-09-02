@@ -46,17 +46,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Depth: 1000
-    - _Depth_Fade: 1
+    - _Depth: 500
+    - _Depth_Fade: 10
     - _Foam: 0.1
     - _Foam_Scale: 10
     - _Lerp: 0.35
-    - _Normal_Strength: 0.1
+    - _Normal_Strength: 0.001
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Reflection_Refraction: 0.5
-    - _Refraction: 0.25
-    - _Smoothness: 1
+    - _Reflection_Refraction: 50
+    - _Refraction: 50
+    - _Smoothness: 0.5
     - _Water_Lerp: 0.4
     - _Wave: 0.05
     m_Colors:

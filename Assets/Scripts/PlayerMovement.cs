@@ -8,57 +8,106 @@ public class PlayerMovement : MonoBehaviour
     //declare reference variables
     PlayerInput playerInput;
     CharacterController characterController;
-    Animator playerAnimator;
+    Animator animator;
 
-    //variables to store optimized setter/getter parameter IDs
-    int isRunningHash;
+    // variables to store optimized setter/getter parameter IDs
+    int isRunninHash;
+    int isJumpingHash;
 
-    //Variables to store player input values
+    // variables to store plaer input values
     Vector2 currentMovementInput;
     Vector3 currentMovement;
     Vector3 appliedMovement;
+    Vector3 cameraRelativeMovement;
+
     bool isMovementPressed;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float rotationFactorPerFrame = 1.0f;
 
-    //constants
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float rotationFactorPerFrame = 5f;
+    // gravity variables
+    float gravity = -9.81f;
+    float groundedGravity = -0.05f;
 
-    //gravity variables
-    private float gravity = -9.8f;
-    private float groundedGravity = -0.5f;
-
-    //jumping variables
+    // jumping variables
     bool isJumpPressed = false;
-    private float initialJumpVelocity;
-    [SerializeField] private float maxJumpHeight = 3f;
-    [SerializeField] private float maxJumpTime = 1f;
+    float initialJumpVelocity;
+    [SerializeField] private float maxJumpHeight = 2f;
+    [SerializeField] private float maxJumpTime = 1.5f;
     bool isJumping = false;
-    int isJumpingHash;
     bool isJumpAnimating = false;
+
+
 
     private void Awake()
     {
-        //initialize set reference variables
+        // initially set reference variables
         playerInput = new PlayerInput();
         characterController = GetComponent<CharacterController>();
-        playerAnimator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
 
-        //set the parameter hash references
-        isRunningHash = Animator.StringToHash("isRunning");
+        isRunninHash = Animator.StringToHash("isRunning");
         isJumpingHash = Animator.StringToHash("isJumping");
 
-        //set the player input callbacks
-        playerInput.PlayerControls.Movement.started += OnMovementInput;
-        playerInput.PlayerControls.Movement.canceled += OnMovementInput;
-        playerInput.PlayerControls.Movement.performed += OnMovementInput;
-        playerInput.PlayerControls.Jump.started += OnJump;
-        playerInput.PlayerControls.Jump.canceled += OnJump;
+        // set the player input callbacks
+        playerInput.PlayerControlsIP.Move.started += OnMovementInput;
+        playerInput.PlayerControlsIP.Move.canceled += OnMovementInput;
+        playerInput.PlayerControlsIP.Move.performed += OnMovementInput;
+        playerInput.PlayerControlsIP.Jump.started += OnJumpInput;
+        playerInput.PlayerControlsIP.Jump.canceled += OnJumpInput;
 
         SetupJumpVariables();
     }
 
-    // callback handler function to set the player input values
-    private void OnMovementInput(InputAction.CallbackContext context)
+    // Start is called before the first frame update
+    void Start()
+    {
+
+    }
+
+    void SetupJumpVariables()
+    {
+        float _timeToApex = maxJumpTime / 2;
+        gravity = (-2 * maxJumpHeight) / Mathf.Pow(_timeToApex, 2);
+        initialJumpVelocity = (2 * maxJumpHeight) / _timeToApex;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        HandleROtation();
+        HandleAnimation();
+
+        appliedMovement.x = currentMovement.x;
+        appliedMovement.z = currentMovement.z;
+
+        cameraRelativeMovement = ConvertToCameraSpace(appliedMovement);
+        characterController.Move(cameraRelativeMovement * moveSpeed * Time.deltaTime);
+
+        HandleGravity();
+        HandleJump();
+    }
+
+
+
+    void HandleJump()
+    {
+        if (!isJumping && characterController.isGrounded && isJumpPressed)
+        {
+            animator.SetBool(isJumpingHash, true);
+            isJumpAnimating = true;
+            isJumping = true;
+            currentMovement.y = initialJumpVelocity;
+            appliedMovement.y = initialJumpVelocity;
+        }
+
+        else if (!isJumpPressed && isJumping && characterController.isGrounded)
+        {
+            isJumping = false;
+        }
+    }
+    // handle function to set the player input values
+    void OnMovementInput(InputAction.CallbackContext context)
     {
         currentMovementInput = context.ReadValue<Vector2>();
         currentMovement.x = currentMovementInput.x;
@@ -66,128 +115,103 @@ public class PlayerMovement : MonoBehaviour
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
     }
 
-    //callback handler function for jump button
-    private void OnJump(InputAction.CallbackContext context)
+    void HandleROtation()
+    {
+        Vector3 _positionToLookAt;
+
+        _positionToLookAt.x = cameraRelativeMovement.x;
+        _positionToLookAt.y = 0.0f;
+        _positionToLookAt.z = cameraRelativeMovement.z;
+
+        Quaternion _currentRotation = transform.rotation;
+
+        if (isMovementPressed)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(_positionToLookAt);
+            transform.rotation = Quaternion.Slerp(_currentRotation, targetRotation, rotationFactorPerFrame * Time.deltaTime);
+        }
+    }
+
+    void OnJumpInput(InputAction.CallbackContext context)
     {
         isJumpPressed = context.ReadValueAsButton();
     }
 
-    private void HandleAnimation()
+    void HandleAnimation()
     {
-        // get parameter values from  animator
-        bool isRunning = playerAnimator.GetBool(isRunningHash);
+        bool isRunning = animator.GetBool(isRunninHash);
 
-        //start running if movement pressed is true and not already running
         if (isMovementPressed && !isRunning)
         {
-            playerAnimator.SetBool(isRunningHash, true);
+            animator.SetBool(isRunninHash, true);
         }
 
-        //stop running if is movementPressed is false and not already running
         else if (!isMovementPressed && isRunning)
         {
-            playerAnimator.SetBool(isRunningHash, false);
+            animator.SetBool(isRunninHash, false);
         }
     }
 
-    private void HandleRotation()
+    void HandleGravity()
     {
-        Vector3 positionToLookAt;
-        //the change in position our character should point to
-        positionToLookAt.x = currentMovement.x;
-        positionToLookAt.y = 0.0f;
-        positionToLookAt.z = currentMovement.z;
-
-        //the current rotation of our character
-        Quaternion currentRotation = transform.rotation;
-
-        if (isMovementPressed)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
-            transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationFactorPerFrame * Time.deltaTime);
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        HandleRotation();
-        HandleAnimation();
-
-        appliedMovement.x = currentMovement.x;
-        appliedMovement.z = currentMovement.z;
-        characterController.Move(appliedMovement * speed * Time.deltaTime);
-
-        HandleGravity();
-        handleJump();
-    }
-
-    // set the initial velocity and gravity using jump heights and duration
-    private void SetupJumpVariables()
-    {
-        float timeToApex = maxJumpTime / 2;
-        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
-        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
-    }
-
-    // launch character into the air with initial vertical velocity if conditions met
-    private void handleJump()
-    {
-        if (!isJumping && characterController.isGrounded && isJumpPressed)
-        {
-            playerAnimator.SetBool(isJumpingHash, true);
-            isJumpAnimating = true;
-            isJumping = true;
-            currentMovement.y = initialJumpVelocity;
-            appliedMovement.y = initialJumpVelocity;
-        }
-        else if (!isJumpPressed && isJumping && characterController.isGrounded)
-        {
-            isJumping = false;
-        }
-    }
-
-    private void HandleGravity()
-    {
-        bool isFalling = currentMovement.y <= 0.0f || !isJumpPressed;
+        bool _isFalling = currentMovement.y <= 0.0f;
         float fallMultiplier = 2.0f;
 
-        //apply gravity depending on if the character is on ground or not
+        // apply proper gravity depending on if the player is grounded or not
         if (characterController.isGrounded)
         {
-            if (isJumpAnimating)
-            {
-                playerAnimator.SetBool(isJumpingHash, false);
-                isJumpAnimating = false;
-            }
-
-            currentMovement.y = groundedGravity;
+            animator.SetBool(isJumpingHash, false);
+            isJumpAnimating = false;
             appliedMovement.y = groundedGravity;
-
         }
-        else if (isFalling)
+        else if (_isFalling)
         {
-            float previousYVelocity = currentMovement.y;
+            float _previousYVelocity = currentMovement.y;
             currentMovement.y = currentMovement.y + (gravity * fallMultiplier * Time.deltaTime);
-            appliedMovement.y = Mathf.Max((previousYVelocity + currentMovement.y) * 0.5f, -20.0f);
+            appliedMovement.y = Mathf.Max(_previousYVelocity + currentMovement.y) * 0.5f - 0.5f;
         }
         else
         {
-            float previousYVelocity = currentMovement.y;
+            float _previousYVelocity = currentMovement.y;
             currentMovement.y = currentMovement.y + (gravity * Time.deltaTime);
-            appliedMovement.y = (previousYVelocity + currentMovement.y) * 0.5f;
+            appliedMovement.y = (_previousYVelocity + currentMovement.y) * 0.5f;
         }
+    }
 
+    Vector3 ConvertToCameraSpace(Vector3 vectorToRotate)
+    {
+        // store Y value of the original vector to rotate
+        float _currentYValue = vectorToRotate.y;
+
+        // get the forward and right directional vectors of the camera 
+        Vector3 _cameraForward = Camera.main.transform.forward;
+        Vector3 _cameraRight = Camera.main.transform.right;
+
+        // remove the y values to ignore upward/downward camera angles
+        _cameraForward.y = 0;
+        _cameraRight.y = 0;
+
+        // re-normalize both vectors so they each have a magnitude of 1
+        _cameraForward = _cameraForward.normalized;
+        _cameraRight = _cameraRight.normalized;
+
+        // rotate the X and Z vectorToRotate values to camera space
+        Vector3 _cameraForwardZ = vectorToRotate.z * _cameraForward;
+        Vector3 _cameraRightX = vectorToRotate.x * _cameraRight;
+
+        // the sum of both products is the Vector3 in camera space
+        Vector3 _vectorRotatedToCameraSpace = _cameraForwardZ + _cameraRightX;
+        _vectorRotatedToCameraSpace.y = _currentYValue;
+        return _vectorRotatedToCameraSpace;
     }
 
     private void OnEnable()
     {
-        // Enable the player controls action map
-        playerInput.PlayerControls.Enable();
+        playerInput.PlayerControlsIP.Enable();
     }
 
     private void OnDisable()
     {
-        playerInput.PlayerControls.Disable();
+        playerInput.PlayerControlsIP.Disable();
     }
 }
