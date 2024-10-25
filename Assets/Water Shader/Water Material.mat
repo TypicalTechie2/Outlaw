@@ -54,13 +54,13 @@ Material:
     - _Normal_Strength: 0.001
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Reflection_Refraction: 50
+    - _Reflection_Refraction: 100
     - _Refraction: 50
-    - _Smoothness: 0.5
+    - _Smoothness: 0.453
     - _Water_Lerp: 0.4
     - _Wave: 0.05
     m_Colors:
-    - _Albedo: {r: 0.111149855, g: 0.6220591, b: 0.8792453, a: 0}
+    - _Albedo: {r: 0.13725491, g: 0.5921569, b: 0.6666667, a: 0}
     - _Foam_Color: {r: 1, g: 1, b: 1, a: 0}
     - _UV1: {r: 4, g: 4, b: 0, a: 0}
     - _UV2: {r: 7, g: 7, b: 0, a: 0}
